@@ -2,12 +2,12 @@
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    Resume[] storage = new Resume[10000];
+
+    private Resume[] storage = new Resume[10000];
 
     private int count;
 
     void clear() {
-
         count = 0;
     }
 
@@ -16,23 +16,12 @@ public class ArrayStorage {
         count++;
     }
 
-    Resume get(String uuid) {
-        for (Resume res : storage) {
-            if (res == null) {
-                return null;
-            } else if (res.uuid == uuid) {
-                return res;
-            }
-        }
-        return null;
-    }
-
     void delete(String uuid) {
 
         int index = 10000;
 
         for (int i = 0; i < count; i++) {
-            if (storage[i].uuid == uuid) {
+            if (uuid.equals(storage[i].uuid)) {
                 index = i;
             }
         }
@@ -43,6 +32,21 @@ public class ArrayStorage {
             }
             count--;
         }
+    }
+
+    int size() {
+        return count;
+    }
+
+    Resume get(String uuid) {
+
+        for (int i = 0; i < count; i++) {
+            if(uuid.equals(storage[i].uuid)){
+                return storage[i];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -58,7 +62,4 @@ public class ArrayStorage {
         return storageSize;
     }
 
-    int size() {
-        return count;
-    }
 }
