@@ -1,5 +1,8 @@
 package storage;
 
+import exceptions.ExistStorageException;
+import exceptions.NotExistStorageException;
+import exceptions.StorageException;
 import model.Resume;
 
 import java.util.Arrays;
@@ -7,17 +10,66 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage implements Storage {
+public abstract class AbstractArrayStorage extends AbstractStorage {
 
     private static final int STORAGE_LIMIT = 10000;
-    protected Resume[] storage = new Resume[STORAGE_LIMIT];
-    protected int count;
+    Resume[] storage = new Resume[STORAGE_LIMIT];
+    int count;
 
-    abstract protected int getIndex(String uuid);
+    public void save(Resume resume) {
+
+        if(count==storage.length){
+            throw new StorageException("ERROR:Array full",resume.uuid);
+        }
+
+        int index = getIndex(resume);
+
+        if(index>=0){
+            throw new ExistStorageException(resume.uuid);
+        }else{
+            saveNewResume(resume);
+        }
+
+    }
+
+    public void update(Resume resume){
+
+        int index = getIndex(resume);
+
+        if(index==-1){
+            throw new NotExistStorageException(resume.uuid);
+        }else{
+            updateResume(resume,index);
+        }
+    }
+
+    public void delete(String uuid) {
+
+        int index = getIndex(uuid);
+
+        if(index==-1){
+            throw new NotExistStorageException(uuid);
+        }else {
+            deleteResume(index);
+            count--;
+        }
+    }
+
+    public Resume get(String uuid) {
+
+        int index = getIndex(uuid);
+
+        if(index==-1){
+            throw new NotExistStorageException(uuid);
+        }else {
+            return storage[index];
+        }
+
+    }
 
     public void clear() {
         count = 0;
-        Arrays.fill(storage,null);
+        Arrays.fill(storage,0,count,null);
     }
 
     public int size() {
@@ -28,16 +80,8 @@ public abstract class AbstractArrayStorage implements Storage {
         return Arrays.copyOf(storage,count);
     }
 
-    public Resume get(String uuid) {
+    abstract void saveNewResume(Resume resume);
+    abstract void updateResume(Resume resume,int index);
+    abstract void deleteResume(int index);
 
-        int index = getIndex(uuid);
-
-        if(index==-1){
-            System.out.println("ERROR: (get) Not find element");
-            return null;
-        }else {
-            return storage[index];
-        }
-
-    }
-}
+   }

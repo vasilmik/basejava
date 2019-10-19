@@ -6,59 +6,36 @@ import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
 
-    public void save(Resume resume) {
-
-        if(count==storage.length){
-            System.out.println("ERROR: (save) Array full");
-            return;
-        }
-
-        int index = getIndex(resume.uuid);
-
-        if(index>=0){
-            System.out.println("ERROR: (save) Find element index = "+index);
-            return;
-        }else{
-            storage[count] = resume;
-            count++;
-        }
-
+   @Override
+    void saveNewResume(Resume resume) {
+        storage[count] = resume;
+        count++;
     }
 
-    public void update(Resume resume){
-
-        int index = getIndex(resume.uuid);
-
-        if(index==-1){
-            System.out.println("ERROR: (update) Not find element");
-            return;
-        }else{
-            storage[index] = resume;
-        }
+    @Override
+    void updateResume(Resume resume, int index) {
+        storage[index] = resume;
     }
 
-    public void delete(String uuid) {
-
-        int index = getIndex(uuid);
-
-        if(index==-1){
-            System.out.println("ERROR: (delete) Not find element");
-            return;
-        }else {
-            for (int i = index; i < count; i++) {
-                storage[i] = storage[i + 1];
-            }
-            count--;
+    @Override
+    void deleteResume(int index) {
+        for (int i = index; i < count; i++) {
+            storage[i] = storage[i + 1];
         }
     }
 
     @Override
     public int getIndex(String uuid){
 
-       Resume searchKey = new Resume();
-       searchKey.uuid = uuid;
+       Resume searchKey = new Resume(uuid);
 
        return Arrays.binarySearch(storage, searchKey);
 
     }
+
+    @Override
+    public int getIndex(Resume r){
+        return Arrays.binarySearch(storage, r);
+    }
+
 }
